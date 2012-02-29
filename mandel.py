@@ -26,9 +26,9 @@ def mandel(c):
         if abs(z) > 2:
             break
     if abs(z) >= 2:
-        return False
+        return (False, h)
     else:
-        return True
+        return (True, None)
     
 
 def setup():
@@ -43,13 +43,19 @@ def draw():
     """Naive - do 800 in real, 600 in imaginary"""
     background(0) # Paint the whole screen black
     red = color(240, 0, 0)
-    stroke(red)
+    black = color(0, 0, 0)
+    white = color(255, 255, 255)
     for r in xrange(0, 800, 1):
         for i in xrange(0, 600, 1):
             # Given pixels, map to box in argand plane
             p = complex(map(r, 0, 800, x_min, x_max),
                         map(i, 600, 0, y_min, y_max)) #pyprocessing draws +y downwards on screen
-            if mandel(p):
+            (in_set, num_iterations) = mandel(p)
+            if in_set:
+                stroke(red)
+                point(r, i)
+            else:
+                stroke(lerpColor(black, white, map(num_iterations, 0, 19, 0, 1)))
                 point(r, i)
 
 if __name__ == '__main__':
