@@ -10,7 +10,7 @@ y_max = y_min + 3
 def mandel(c):
     """
     Returns true if complex number is in mandelbrot set.
-    
+
     The mandelbrot set is drawn by looking at a number 'c' in the
     argand plane (2d space where x=real numbers, y=imaginary) and
     testing by function z=z**2 + c where z starts at zero. If after
@@ -29,15 +29,27 @@ def mandel(c):
         return (False, h)
     else:
         return (True, None)
-    
+
 
 def setup():
     size(800,600) # create a window
     smooth() # turn on anti-aliasing
     noLoop() # don't call the draw function repeatedly
 
+
 def mouseClicked():
+    """When you click - center the viewport on the click and the box
+    should be 80% as large as current box."""
+    global x_min, x_max, y_min, y_max
     print((map(mouse.x, 0, 800, x_min, x_max), map(mouse.y, 0, 600, y_min, y_max)))
+    x_margin = (x_max - x_min) * 0.2
+    y_margin = (y_max - y_min) * 0.2
+    x_min = x_min + x_margin
+    x_max = x_max - x_margin
+    y_min = y_min + y_margin
+    y_max = y_max - y_margin
+    redraw()
+
 
 def draw():
     """Naive - do 800 in real, 600 in imaginary"""
@@ -57,6 +69,7 @@ def draw():
             else:
                 stroke(lerpColor(black, white, map(num_iterations, 0, 19, 0, 1)))
                 point(r, i)
+
 
 if __name__ == '__main__':
     run()
