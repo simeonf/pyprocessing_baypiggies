@@ -44,8 +44,8 @@ def draw():
     background(0) # Paint the whole screen black
     red = color(240, 0, 0)
     stroke(red)
-    for r in xrange(0, 800, 2):
-        for i in xrange(0, 600, 2):
+    for r in xrange(0, 800, 1):
+        for i in xrange(0, 600, 1):
             # Given pixels, map to box in argand plane
             p = complex(map(r, 0, 800, x_min, x_max),
                         map(i, 600, 0, y_min, y_max)) #pyprocessing draws +y downwards on screen
