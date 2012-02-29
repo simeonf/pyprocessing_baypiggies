@@ -1,0 +1,251 @@
+= Data Visualizations with Pyprocessing
+:deckjs_theme: marakana
+:deckjs_transition: beamer
+
+==  About Simeon Franklin
+
+[options="incremental"]
+* Longtime Baypiggy
+* Software Dev for about 12 years
+* recently became full-time Python instructor for Marakana.com
+* like to play with Python in my spare time
+* http://simeonfranklin.com / @simeonfranklin
+
+== Defining some terms
+
+[options="incremental"]
+ * Data Visualisation: visual representations of data.
+ * Charts and Graphs (thanks http://code.google.com/apis/ajax/playground/)
+ * Which is easier?
++
+.Simple Bar Graph
+image::./images/simple-graph-1.png[]
++
+----------------------------------
+Austria, Bulgaria, Denmark, Greece
+1336060, 400361, 1001582, 997974 
+1538156, 366849, 1119450, 941795 
+----------------------------------
+
+== Beyond Charts & Graphs
+
+[options="incremental"]
+ 1. Increasingly complex and non-obvious ways of visually representing lots of data.
+ 2. New insight can be gained by looking at data in new ways
+ 3. Art!
+
+== Example: Motion Charts
+
+[options="incremental"]
+ * Hans Rosling introduced motion charts in his TED talk in 2006 on
+   understanding the world through visualization of demographic
+   data. Many of you have probably seen this -
+   http://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen.html
+
+ * We'll just watch a few minutes (2:50-5:05) but the whole thing is
+   worth your time.
+
+== Aftermath   
+
+[quote, http://en.wikipedia.org/wiki/Hans_Rosling#Gapminder]
+Rosling developed the Trendalyzer software that converts international
+statistics into moving, interactive graphics. His lectures using
+Gapminder graphics to visualise world development have won awards. On
+16 March 2007 Google acquired the Trendalyzer software with the
+intention to scale it up and make it freely available for public
+statistics. In 2008 Google made available a Motion Chart Google Gadget
+and in 2009 the Public Data Explorer. See
+http://code.google.com/apis/chart/interactive/docs/gallery/motionchart.html#Example
+
+== Insight or Art?
+
+[options="incremental"]
+ * Yes!
+ * Motion Charts are easily described, new "standard" control
+ * help us visualize lots of data (population, fertility, longevity through
+   time)
+ * But also increasingly visualizations aimed at aesthetic beauty
+
+== I blame Edward Tufte
+
+.Visual Display of Quantitative Information
+image::./images/tufte.gif[]
+
+Edward Tufte - godfather of making data beautiful.
+
+== Data can be beautiful
+
+http://infosthetics.com/
+
+[options="incremental"]
+* Not necessarily insightful
+* But compelling
+
+== processing
+
+Popular Java application that is an environment for creating
+visuals. http://www.processing.org
+
+[options="incremental"]
+ - Easy API
+ - straightforward language
+ - nice IDE to manage resources
+ - large community
+ - good docs
+ - Many professional and amateur examples
+ - eg http://www.aaronkoblin.com/work/flightpatterns/
+
+== Processing in not-Java
+
+Why should Java have all the fun? And shouldn't we be getting to Python sometime?
+
+== Javascript
+
+=== processing.js
+[options="incremental"]
+ - originally by John Resig
+ - http://processingjs.org/
+ - Processing interpreter written in Javascript rendering to Canvas in the browser
+
+== Python
+
+=== pyprocessing
+[options="incremental"]
+ - http://code.google.com/p/pyprocessing/
+ - port of processing API - not the language
+ - built on gaming library 'pyglet' and 3d library 'OpenGL.GL'
+ - Also processing.py - https://github.com/jdf/processing.py - Processing in Python via Jython
+
+
+== My interest
+
+.Visual Display of Quantitative Information
+image::./images/visualizing-data.gif[]
+
+(Free books! Thanks Baypiggies!)
+
+Instructive thoughts on building data visualisations and an intro to
+Processing from Ben Fry - one of the original authors of the
+Processing project.
+
+== Let's make a motion chart!
+
+Following the steps recommended by 'Visualizing Data' for every data visualization project:
+
+[options="incremental"]
+ * Acquire: http://gapminder.org/data/. Suprisingly, this may be the most
+difficult step for many data visualization projects.
+* parse: save excel as csv
+* filter: only the top 50 countries by population
+* mine: calculations, transformations, generated data. Eg: orthographic projections, pixelspace
+* represent: motion charts. Circles sized by population, colored by
+region, moving in x family size and y longevity.
+* refine: ?
+* interact: ?
+
+== Demo demographics.py
+
+
+
+== Code
+
+'demographics.py'
+
+[options="incremental"]
+* Most of the code dedicated to parsing, formatting, normalizing data
+* Simple callbacks determine program structure (setup, draw, run())
+* functions to set environment - size(), smooth(), noStroke()
+* simple stateful API - background(), fill(), ellipse()
+* 7 API calls total.
+* No buffers, blitting, manual event loop, etc.
+   
+== Lesson
+
+The complexity is all in the data steps, drawing is easy.
+
+[options="incremental"]
+ * Must convert years and data measurements to pixelspace (where to draw what on an 800x600 window)
+ * To get smooth animations instead of jumps I had to interpolate between data points. I just did linear interpolation.
+ * 'demographics_loading.py'
+
+   
+== demo zipdecodes.py
+ - zipdecode - very nice visualization at http://benfry.com/zipdecode/
+ - acquire, parse, filter, mine, represent, refine, interact
+
+== Code
+
+'zipdecodes.py'
+
+[options="incremental"]
+ * new callback keyPressed() plus use of noLoop()/redraw()
+ * new API calls createFont(), textFont(), text()
+ * stroke() and point()
+ * use pyprocessing.map() instead of my own normalize_range function
+
+== Lessons?
+
+Python/Pyglet is slower than Processing.
+
+==== Pro Hint
+[options="incremental"]
+* It's all slow, depending on rendering method and drivers.
+ Be sure to add OPENGL context to Processing examples before running
+ if you don't want your computer to die a painful death.
+* Similarly - you may have to play with the buffering mode in pyprocessing
+ to find the one that's right for your card/driver under Linux. See
+ http://code.google.com/p/pyprocessing/wiki/FlipPolicy
+
+== Can we make it faster?
+
+'zipdecodes_data.py'
+
+[options="incremental"]
+ * pre-calculate pixel space instead of doing math in draw loop
+ * throw away colliding pixels 
+ * separate zips by first digit, limiting # of records to search through for prefix matching
+ * pre-render all yellow points as default case
+ * pre-render all red points as base for prefix matching
+ * save in binary pickle instead of reading from .csv
+ * createImage() and PImage.set(), PImage.save()
+
+== How did we do?
+
+'zipdecodes_fast.py'
+
+[options="incremental"]
+ * load yellow and red background images (image())
+ * optimize looping through data
+ * ended up much slower than zipdecodes.py
+ * but more snappy when filtering
+
+== Lessons
+
+PImage class is for filtering and transforming arrays of colors, not
+for rapid display. Uses numpy to store arrays of colors but still
+ridiculously slow for my purposes.
+
+== Much Much More
+
+[options="incremental"]
+* Enough pyprocessing to see what's easily possible.
+* We haven't covered the 3D portion of the API (lights, cameras, materials,
+  shapes, transformations, etc)
+* barely scratched the surface of colors, 2D shapes, text, and environment
+
+== Complaints
+
+[options="incremental"]
+* 'from pyprocessing import *' Bad!
+* Tromps on map()
+* 'import pyprocessing' pops up a window! Bad!
+* slow
+* I really have to learn Pyglet.
+
+== Conclusion
+
+[options="incremental"]
+* Fun!
+* I'm polishing my motion chart demo and improving the zipdecode. I'm
+also working on hierarchical graph layout in 3d.
+* Questions?
